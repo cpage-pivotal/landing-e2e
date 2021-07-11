@@ -1,0 +1,16 @@
+header {
+    margin: 0.75em;
+}
+
+nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.5em;
+    margin: 0.5em;
+}
+
+.workshop-card {
+    background-color: var(--gray-dark);
+    border-radius: 5px;
+    padding: 0.5em;
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="tanzu.css" rel="stylesheet">
+    <link href="index.css" rel="stylesheet">
+<!--    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet"/>-->
+</head>
+
+<body>
+<div id="app">
+    <header>
+        <h1>Tanzu Workshops</h1>
+        <p>Brought to you by your friends at #tsl-end2end</p>
+    </header>
+
+    <nav>
+        <div class="workshop-card" th:each="workshop: ${workshops}">
+            <p class="display-4"><a th:href="${'workshops/' + workshop.name}" th:text="${workshop.title}">{{ workshop.title }}</a></p>
+            <p th:text="${workshop.description}">{{ workshop.description }}</p>
+        </div>
+    </nav>
+</div>
+</body>
+
+</html>
