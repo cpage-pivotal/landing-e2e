@@ -14,6 +14,7 @@ public class EducatesProperties {
 
     private String _indexUrl = "";
     private String _accessToken = "";
+    private String _refreshToken = "";
 
     public String getPortalDomain() {
         return _portalDomain;
@@ -61,6 +62,14 @@ public class EducatesProperties {
 
     public void setIndexUrl(String indexUrl) {
         _indexUrl = indexUrl;
+    }
+
+    public String getRefreshToken() {
+        return _refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        _refreshToken = refreshToken;
     }
 
     public String getAccessToken() {
