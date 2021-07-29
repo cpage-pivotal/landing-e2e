@@ -1,82 +1,24 @@
 package com.vmware.landing.config;
 
+import com.vmware.landing.model.TrainingPortal;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 @ConfigurationProperties(prefix = "educates")
 public class EducatesProperties {
-    private String _portalDomain;
-    private String _robotUser;
-    private String _robotPassword;
-    private String _robotClientId;
-    private String _robotSecret;
+    private List<TrainingPortal> _trainingPortals;
 
-    private String _indexUrl = "";
-    private String _accessToken = "";
-    private String _refreshToken = "";
-
-    public String getPortalDomain() {
-        return _portalDomain;
+    public EducatesProperties() {
     }
 
-    public void setPortalDomain(String portalDomain) {
-        _portalDomain = portalDomain;
+    public List<TrainingPortal> getTrainingPortals() {
+        return _trainingPortals;
     }
 
-    public String getRobotUser() {
-        return _robotUser;
-    }
-
-    public void setRobotUser(String robotUser) {
-        _robotUser = robotUser;
-    }
-
-    public String getRobotPassword() {
-        return _robotPassword;
-    }
-
-    public void setRobotPassword(String robotPassword) {
-        _robotPassword = robotPassword;
-    }
-
-    public String getRobotClientId() {
-        return _robotClientId;
-    }
-
-    public void setRobotClientId(String robotClientId) {
-        _robotClientId = robotClientId;
-    }
-
-    public String getRobotSecret() {
-        return _robotSecret;
-    }
-
-    public void setRobotSecret(String robotSecret) {
-        _robotSecret = robotSecret;
-    }
-
-    public String getIndexUrl() {
-        return _indexUrl;
-    }
-
-    public void setIndexUrl(String indexUrl) {
-        _indexUrl = indexUrl;
-    }
-
-    public String getRefreshToken() {
-        return _refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        _refreshToken = refreshToken;
-    }
-
-    public String getAccessToken() {
-        return _accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        _accessToken = accessToken;
+    public void setTrainingPortals(List<TrainingPortal> trainingPortals) {
+        _trainingPortals = trainingPortals;
     }
 }

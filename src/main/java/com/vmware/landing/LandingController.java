@@ -1,6 +1,7 @@
 package com.vmware.landing;
 
 import com.vmware.landing.config.EducatesProperties;
+import com.vmware.landing.model.TrainingPortal;
 import com.vmware.landing.model.Workshop;
 import com.vmware.landing.util.RequestUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,50 +34,63 @@ public class LandingController {
 
     @RequestMapping("/")
     public String home(Model model) {
-        List<Workshop> workshops = fetchWorkshops();
+        List<Workshop> workshops = new ArrayList<>();
+        for (TrainingPortal portal : _educatesProperties.getTrainingPortals()) {
+            workshops.addAll(fetchWorkshops(portal));
+        }
         model.addAttribute("workshops", workshops);
         return "index";
     }
 
     @Scheduled(fixedRate = 43200000,initialDelay = 43200000)
     public void refresh() {
-        String tokenURL = "https://" + _educatesProperties.getPortalDomain() + "/oauth2/token/";
-        var restTemplate = new RestTemplate();
-        var httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        for (TrainingPortal portal : _educatesProperties.getTrainingPortals()) {
+            String tokenURL = "https://" + portal.getPortalDomain() + "/oauth2/token/";
+            var restTemplate = new RestTemplate();
+            var httpHeaders = new HttpHeaders();
+            httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        var params = new LinkedMultiValueMap<String, String>();
-        params.add("grant_type", "refresh_token");
-        params.add("refresh_token", _educatesProperties.getRefreshToken());
-        params.add("client_id", _educatesProperties.getRobotClientId());
-        params.add("client_secret", _educatesProperties.getRobotSecret());
+            var params = new LinkedMultiValueMap<String, String>();
+            params.add("grant_type", "refresh_token");
+            params.add("refresh_token", portal.getRefreshToken());
+            params.add("client_id", portal.getRobotClientId());
+            params.add("client_secret", portal.getRobotSecret());
 
-        _requestUtilities.sendRequest(tokenURL, restTemplate, httpHeaders, params);
+            _requestUtilities.sendRequest(tokenURL, restTemplate, httpHeaders, params, portal);
+        }
     }
 
-    @RequestMapping("/workshops/{environmentId}")
-    public RedirectView launchWorkshop(@PathVariable("environmentId") String environmentId) {
-        String requestURL = "https://" + _educatesProperties.getPortalDomain() +
-                "/workshops/environment/" + environmentId + "/request/?index_url=" + _educatesProperties.getIndexUrl();
+    @RequestMapping("/portal/{portalId}/workshop/{environmentId}")
+    public RedirectView launchWorkshop(@PathVariable("portalId") String portalId, @PathVariable("environmentId") String environmentId) {
+
+        TrainingPortal trainingPortal = new TrainingPortal();
+        for (TrainingPortal portal : _educatesProperties.getTrainingPortals()) {
+            if ( portal.getPortalDomain().equals(portalId))
+                trainingPortal = portal;
+        }
+
+        String requestURL = "https://" + trainingPortal.getPortalDomain() +
+                "/workshops/environment/" + environmentId + "/request/?index_url=" + trainingPortal.getIndexUrl();
         var restTemplate = new RestTemplate();
         var httpHeaders = new HttpHeaders();
-        httpHeaders.setBearerAuth(_educatesProperties.getAccessToken());
+        httpHeaders.setBearerAuth(trainingPortal.getAccessToken());
         var entity = new HttpEntity<String>(httpHeaders);
         var response = restTemplate.exchange(requestURL, HttpMethod.GET, entity, String.class );
 
         var parser = JsonParserFactory.getJsonParser();
         var body = parser.parseMap(response.getBody());
 
-        String workshopUrl = "https://" + _educatesProperties.getPortalDomain() + body.get("url");
+        String workshopUrl = "https://" + trainingPortal.getPortalDomain() + body.get("url");
         return new RedirectView(workshopUrl);
     }
 
-    private List<Workshop> fetchWorkshops() {
+    private List<Workshop> fetchWorkshops(TrainingPortal portal) {
         List<Workshop> result = new ArrayList<>();
-        String environmentsURL = "https://" + _educatesProperties.getPortalDomain() + "/workshops/catalog/environments/";
+
+        String environmentsURL = "https://" + portal.getPortalDomain() + "/workshops/catalog/environments/";
         var restTemplate = new RestTemplate();
         var httpHeaders = new HttpHeaders();
-        httpHeaders.setBearerAuth(_educatesProperties.getAccessToken());
+        httpHeaders.setBearerAuth(portal.getAccessToken());
         var entity = new HttpEntity<String>(httpHeaders);
         var response = restTemplate.exchange(environmentsURL, HttpMethod.GET, entity, String.class);
 

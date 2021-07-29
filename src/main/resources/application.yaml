@@ -1,0 +1,16 @@
+educates:
+  trainingPortals:
+    -
+      portalDomain:
+      robotUser:
+      robotPassword:
+      robotClientId:
+      robotSecret:
+      indexUrl:
+    -
+      portalDomain:
+      robotUser:
+      robotPassword:
+      robotClientId:
+      robotSecret:
+      indexUrl:
