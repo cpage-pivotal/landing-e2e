@@ -17,10 +17,15 @@
     </header>
 
     <nav>
-        <div class="workshop-card" th:each="workshop: ${workshops}">
-            <p class="display-4"><a th:href="${'workshops/' + workshop.name}" th:text="${workshop.title}">{{ workshop.title }}</a></p>
-            <p th:text="${workshop.description}">{{ workshop.description }}</p>
-        </div>
+        <details th:each="portalWorkshop: ${portalWorkshops}">
+            <summary><h2 th:text="${portalWorkshop.key.name}"></h2></summary>
+            <div class="workshop-list">
+                <div class="workshop-card" th:each="workshop: ${portalWorkshop.value}">
+                    <p class="display-4"><a th:href="${'workshops/' + workshop.name}" th:text="${workshop.title}">{{ workshop.title }}</a></p>
+                    <p th:text="${workshop.description}">{{ workshop.description }}</p>
+                </div>
+            </div>
+        </details>
     </nav>
 </div>
 </body>

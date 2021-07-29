@@ -22,6 +22,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 @Controller
 public class LandingController {
@@ -34,15 +35,15 @@ public class LandingController {
 
     @RequestMapping("/")
     public String home(Model model) {
-        List<Workshop> workshops = new ArrayList<>();
-        for (TrainingPortal portal : _educatesProperties.getTrainingPortals()) {
-            workshops.addAll(fetchWorkshops(portal));
+        var portalWorkshops = new LinkedHashMap<TrainingPortal, List<Workshop>>();
+        for (var portal : _educatesProperties.getTrainingPortals()) {
+            portalWorkshops.put(portal, fetchWorkshops(portal));
         }
-        model.addAttribute("workshops", workshops);
+        model.addAttribute("portalWorkshops", portalWorkshops);
         return "index";
     }
 
-    @Scheduled(fixedRate = 43200000,initialDelay = 43200000)
+    @Scheduled(fixedRate = 43200000, initialDelay = 43200000)
     public void refresh() {
         for (TrainingPortal portal : _educatesProperties.getTrainingPortals()) {
             String tokenURL = "https://" + portal.getPortalDomain() + "/oauth2/token/";
@@ -61,21 +62,22 @@ public class LandingController {
     }
 
     @RequestMapping("/portal/{portalId}/workshop/{environmentId}")
-    public RedirectView launchWorkshop(@PathVariable("portalId") String portalId, @PathVariable("environmentId") String environmentId) {
+    public RedirectView launchWorkshop(@PathVariable("portalId") String portalId,
+            @PathVariable("environmentId") String environmentId) {
 
         TrainingPortal trainingPortal = new TrainingPortal();
         for (TrainingPortal portal : _educatesProperties.getTrainingPortals()) {
-            if ( portal.getPortalDomain().equals(portalId))
+            if (portal.getPortalDomain().equals(portalId))
                 trainingPortal = portal;
         }
 
-        String requestURL = "https://" + trainingPortal.getPortalDomain() +
-                "/workshops/environment/" + environmentId + "/request/?index_url=" + trainingPortal.getIndexUrl();
+        String requestURL = "https://" + trainingPortal.getPortalDomain() + "/workshops/environment/" + environmentId
+                + "/request/?index_url=" + trainingPortal.getIndexUrl();
         var restTemplate = new RestTemplate();
         var httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(trainingPortal.getAccessToken());
         var entity = new HttpEntity<String>(httpHeaders);
-        var response = restTemplate.exchange(requestURL, HttpMethod.GET, entity, String.class );
+        var response = restTemplate.exchange(requestURL, HttpMethod.GET, entity, String.class);
 
         var parser = JsonParserFactory.getJsonParser();
         var body = parser.parseMap(response.getBody());
@@ -101,7 +103,8 @@ public class LandingController {
         for (Map<String, Object> environment : environments) {
             String environmentName = (String) environment.get("name");
             Map<String, Object> workshopData = (Map<String, Object>) environment.get("workshop");
-            Workshop workshop = new Workshop(environmentName, (String) workshopData.get("title"), (String) workshopData.get("description"));
+            Workshop workshop = new Workshop(environmentName, (String) workshopData.get("title"),
+                    (String) workshopData.get("description"));
             result.add(workshop);
         }
 

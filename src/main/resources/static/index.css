@@ -1,8 +1,8 @@
 header {
-    margin: 0.75em;
+    margin: 1em;
 }
 
-nav {
+.workshop-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 0.5em;
@@ -13,4 +13,16 @@ nav {
     background-color: var(--gray-dark);
     border-radius: 5px;
     padding: 0.5em;
+}
+
+details {
+    margin: 1em;
+}
+
+summary {
+    font-size: 2rem;
+}
+
+h2 {
+    display: inline;
 }
