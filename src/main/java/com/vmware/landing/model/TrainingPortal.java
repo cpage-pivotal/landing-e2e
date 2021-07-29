@@ -1,6 +1,7 @@
 package com.vmware.landing.model;
 
 public class TrainingPortal {
+    private String _name;
     private String _portalDomain;
     private String _robotUser = "robot@eduk8s";
     private String _robotPassword;
@@ -11,6 +12,14 @@ public class TrainingPortal {
     private String _refreshToken = "";
 
     public TrainingPortal() {
+    }
+
+    public String getName() {
+        return _name;
+    }
+
+    public void setName(String name) {
+        _name = name;
     }
 
     public String getPortalDomain() {

@@ -1,16 +1,26 @@
 educates:
   trainingPortals:
     -
-      portalDomain:
-      robotUser:
-      robotPassword:
-      robotClientId:
-      robotSecret:
-      indexUrl:
+      name: Corby's Workshops
+      portalDomain: e2e-workshop-ui.contour.e2e.corby.cc
+      robotUser: robot@eduk8s
+      robotPassword: 0WRGUzJM5vV9KlBXaZCSIyeis2wxgrYd
+      robotClientId: gl6OpS2UT4e3xWyaDuRHXbdKPZFiCnoj
+      robotSecret: RKG5A1LyUgHYBxOtZcduNVloF8sIphwz
+      indexUrl: https://e2e-workshop-ui.contour.e2e.corby.cc/workshops/catalog/
     -
-      portalDomain:
-      robotUser:
-      robotPassword:
-      robotClientId:
-      robotSecret:
-      indexUrl:
+      name: Timo's Workshops
+      portalDomain: e2e-workshop-ui.emea.demo.tanzu.club
+      robotUser: robot@eduk8s
+      robotPassword: YbZ2jqBysnv1rMViLkRp6KcXOzdUPha7
+      robotClientId: PnMRSk69JT1D5ul8HdUqLbCogX7Z0vNA
+      robotSecret: jQmTofaH6rFXlRnKbENgwWOu8zMp4IDC
+      indexUrl: https://e2e-workshop-ui.emea.demo.tanzu.club/workshops/catalog/
+    -
+      name: Official Workshops
+      portalDomain: e2e-workshop-ui.tools.pez.aws.grogscave.net
+      robotUser: robot@eduk8s
+      robotPassword: 16E8rBLUdVbDOz7fsokAm0Ye9WQ5GuHF
+      robotClientId: RafQ9B6FqmlTYydEOW0As7h3jkUMNerJ
+      robotSecret: LIqOjT192pKcRaxlENifQtH3dJYbgyDu
+      indexUrl: https://e2e-workshop-ui.tools.pez.aws.grogscave.net/workshops/catalog/
