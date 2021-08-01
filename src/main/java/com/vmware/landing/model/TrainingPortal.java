@@ -1,5 +1,7 @@
 package com.vmware.landing.model;
 
+import java.util.Objects;
+
 public class TrainingPortal {
     private String _name;
     private String _portalDomain;
@@ -84,5 +86,25 @@ public class TrainingPortal {
 
     public void setRefreshToken(String refreshToken) {
         _refreshToken = refreshToken;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TrainingPortal that = (TrainingPortal) o;
+        return getPortalDomain().equals(that.getPortalDomain());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPortalDomain());
+    }
+
+    @Override
+    public String toString() {
+        return "TrainingPortal{" +
+                "_portalDomain='" + _portalDomain + '\'' +
+                '}';
     }
 }
