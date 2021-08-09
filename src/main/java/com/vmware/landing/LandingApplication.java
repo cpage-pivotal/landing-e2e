@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -35,8 +36,6 @@ public class LandingApplication {
     @Bean
     CommandLineRunner fetchAccessTokens() {
         return args -> {
-            System.out.println("Current Directory " + System.getProperty("user.dir"));
-
             List<TrainingPortal> unauthenticated = new ArrayList<>();
 
             for (TrainingPortal portal : _educatesProperties.getTrainingPortals()) {
@@ -53,7 +52,7 @@ public class LandingApplication {
 
                 try {
                     _requestUtilities.sendRequest(tokenURL, restTemplate, httpHeaders, params, portal);
-                } catch (HttpClientErrorException ex) {
+                } catch (HttpClientErrorException | ResourceAccessException ex) {
                     System.out.println("Could not authenticate to " + portal);
                     unauthenticated.add(portal);
                 }
