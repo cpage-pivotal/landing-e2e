@@ -39,7 +39,7 @@ public class LandingApplication {
             List<TrainingPortal> unauthenticated = new ArrayList<>();
 
             for (TrainingPortal portal : _educatesProperties.getTrainingPortals()) {
-                String tokenURL = "https://" + portal.getPortalDomain() + "/oauth2/token/";
+                String tokenURL = portal.getUriPrefix() + portal.getPortalDomain() + "/oauth2/token/";
                 var restTemplate = new RestTemplate();
                 var httpHeaders = new HttpHeaders();
                 httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

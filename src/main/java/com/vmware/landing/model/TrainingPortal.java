@@ -10,6 +10,7 @@ public class TrainingPortal {
     private String _robotClientId;
     private String _robotSecret;
     private String _indexUrl;
+    private boolean _secure = true;
     private String _accessToken = "";
     private String _refreshToken = "";
 
@@ -86,6 +87,21 @@ public class TrainingPortal {
 
     public void setRefreshToken(String refreshToken) {
         _refreshToken = refreshToken;
+    }
+
+    public boolean isSecure() {
+        return _secure;
+    }
+
+    public void setSecure(boolean secure) {
+        _secure = secure;
+    }
+
+    public String getUriPrefix() {
+        String result = "https://";
+        if ( !_secure )
+            result = "http://";
+        return result;
     }
 
     @Override

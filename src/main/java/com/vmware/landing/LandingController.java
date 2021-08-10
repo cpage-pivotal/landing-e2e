@@ -46,7 +46,7 @@ public class LandingController {
     @Scheduled(fixedRate = 43200000, initialDelay = 43200000)
     public void refresh() {
         for (TrainingPortal portal : _educatesProperties.getTrainingPortals()) {
-            String tokenURL = "https://" + portal.getPortalDomain() + "/oauth2/token/";
+            String tokenURL = portal.getUriPrefix() + portal.getPortalDomain() + "/oauth2/token/";
             var restTemplate = new RestTemplate();
             var httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -71,7 +71,7 @@ public class LandingController {
                 trainingPortal = portal;
         }
 
-        String requestURL = "https://" + trainingPortal.getPortalDomain() + "/workshops/environment/" + environmentId
+        String requestURL = trainingPortal.getUriPrefix() + trainingPortal.getPortalDomain() + "/workshops/environment/" + environmentId
                 + "/request/?index_url=" + trainingPortal.getIndexUrl();
         var restTemplate = new RestTemplate();
         var httpHeaders = new HttpHeaders();
@@ -82,14 +82,14 @@ public class LandingController {
         var parser = JsonParserFactory.getJsonParser();
         var body = parser.parseMap(response.getBody());
 
-        String workshopUrl = "https://" + trainingPortal.getPortalDomain() + body.get("url");
+        String workshopUrl = trainingPortal.getUriPrefix() + trainingPortal.getPortalDomain() + body.get("url");
         return new RedirectView(workshopUrl);
     }
 
     private List<Workshop> fetchWorkshops(TrainingPortal portal) {
         List<Workshop> result = new ArrayList<>();
 
-        String environmentsURL = "https://" + portal.getPortalDomain() + "/workshops/catalog/environments/";
+        String environmentsURL = portal.getUriPrefix() + portal.getPortalDomain() + "/workshops/catalog/environments/";
         var restTemplate = new RestTemplate();
         var httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(portal.getAccessToken());
