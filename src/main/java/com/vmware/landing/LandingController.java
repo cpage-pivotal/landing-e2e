@@ -5,10 +5,7 @@ import com.vmware.landing.model.TrainingPortal;
 import com.vmware.landing.model.Workshop;
 import com.vmware.landing.util.RequestUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JsonParserFactory;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
@@ -20,9 +17,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 @Controller
 public class LandingController {
@@ -71,16 +68,9 @@ public class LandingController {
                 trainingPortal = portal;
         }
 
-        String requestURL = trainingPortal.getUriPrefix() + trainingPortal.getPortalDomain() + "/workshops/environment/" + environmentId
-                + "/request/?index_url=" + trainingPortal.getIndexUrl();
-        var restTemplate = new RestTemplate();
-        var httpHeaders = new HttpHeaders();
-        httpHeaders.setBearerAuth(trainingPortal.getAccessToken());
-        var entity = new HttpEntity<String>(httpHeaders);
-        var response = restTemplate.exchange(requestURL, HttpMethod.GET, entity, String.class);
-
-        var parser = JsonParserFactory.getJsonParser();
-        var body = parser.parseMap(response.getBody());
+        String requestURL = trainingPortal.getUriPrefix() + trainingPortal.getPortalDomain() +
+                "/workshops/environment/" + environmentId + "/request/?index_url=" + trainingPortal.getIndexUrl();
+        Map<String, Object> body = _requestUtilities.runGetRequest(requestURL, trainingPortal);
 
         String workshopUrl = trainingPortal.getUriPrefix() + trainingPortal.getPortalDomain() + body.get("url");
         return new RedirectView(workshopUrl);
@@ -90,14 +80,7 @@ public class LandingController {
         List<Workshop> result = new ArrayList<>();
 
         String environmentsURL = portal.getUriPrefix() + portal.getPortalDomain() + "/workshops/catalog/environments/";
-        var restTemplate = new RestTemplate();
-        var httpHeaders = new HttpHeaders();
-        httpHeaders.setBearerAuth(portal.getAccessToken());
-        var entity = new HttpEntity<String>(httpHeaders);
-        var response = restTemplate.exchange(environmentsURL, HttpMethod.GET, entity, String.class);
-
-        var parser = JsonParserFactory.getJsonParser();
-        var body = parser.parseMap(response.getBody());
+        Map<String, Object> body = _requestUtilities.runGetRequest(environmentsURL, portal);
 
         List<Map<String, Object>> environments = (List<Map<String, Object>>) body.get("environments");
         for (Map<String, Object> environment : environments) {

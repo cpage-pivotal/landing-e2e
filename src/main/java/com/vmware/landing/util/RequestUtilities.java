@@ -4,12 +4,14 @@ import com.vmware.landing.config.EducatesProperties;
 import com.vmware.landing.model.TrainingPortal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParserFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 @Service
 public class RequestUtilities {
@@ -24,10 +26,21 @@ public class RequestUtilities {
         var body = parser.parseMap(response.getBody());
 
         String accessToken = (String) body.get("access_token");
+        System.out.println( "SETTING ACCESS TOKEN: " + accessToken );
         portal.setAccessToken(accessToken);
         String refreshToken = (String) body.get("refresh_token");
-        System.out.println( "SETTING REFRESH TOKEN: " + refreshToken );
         portal.setRefreshToken(refreshToken);
     }
 
+    public Map<String, Object> runGetRequest(String requestURL, TrainingPortal trainingPortal) {
+        var httpHeaders = new HttpHeaders();
+        System.out.println( "USING ACCESS TOKEN: " + trainingPortal.getAccessToken() );
+        httpHeaders.setBearerAuth(trainingPortal.getAccessToken());
+
+        var restTemplate = new RestTemplate();
+        var entity = new HttpEntity<String>(httpHeaders);
+        var response = restTemplate.exchange(requestURL, HttpMethod.GET, entity, String.class);
+        var parser = JsonParserFactory.getJsonParser();
+        return parser.parseMap(response.getBody());
+    }
 }
