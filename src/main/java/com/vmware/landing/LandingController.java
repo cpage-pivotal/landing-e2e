@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -34,7 +35,24 @@ public class LandingController {
     public String home(Model model) {
         var portalWorkshops = new LinkedHashMap<TrainingPortal, List<Workshop>>();
         for (var portal : _educatesProperties.getTrainingPortals()) {
-            portalWorkshops.put(portal, fetchWorkshops(portal));
+            List<Workshop> workshops;
+            try {
+                workshops = fetchWorkshops(portal);
+            }
+            catch ( HttpClientErrorException ex )
+            {
+                System.out.println( "Error retreiving workshops for " + portal );
+                System.out.println( "Reauthenticating to " + portal);
+                List<TrainingPortal> unauthenticated = new ArrayList<>();
+                _requestUtilities.authenticateToPortal( portal, unauthenticated );
+                if (!unauthenticated.isEmpty()) {
+                    System.out.println( "Removing " + portal);
+                    _educatesProperties.getTrainingPortals().remove(portal);
+                    continue;
+                }
+                workshops = fetchWorkshops(portal);
+            }
+            portalWorkshops.put(portal, workshops);
         }
         model.addAttribute("portalWorkshops", portalWorkshops);
         return "index";
@@ -42,6 +60,7 @@ public class LandingController {
 
     @Scheduled(fixedRate = 43200000, initialDelay = 43200000)
     public void refresh() {
+        System.out.println( "REFRESHING TOKENS" );
         for (TrainingPortal portal : _educatesProperties.getTrainingPortals()) {
             String tokenURL = portal.getUriPrefix() + portal.getPortalDomain() + "/oauth2/token/";
             var restTemplate = new RestTemplate();

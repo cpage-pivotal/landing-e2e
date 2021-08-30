@@ -7,10 +7,14 @@ import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -42,5 +46,25 @@ public class RequestUtilities {
         var response = restTemplate.exchange(requestURL, HttpMethod.GET, entity, String.class);
         var parser = JsonParserFactory.getJsonParser();
         return parser.parseMap(response.getBody());
+    }
+
+    public void authenticateToPortal(TrainingPortal portal, List<TrainingPortal> unauthenticated) {
+        String tokenURL = portal.getUriPrefix() + portal.getPortalDomain() + "/oauth2/token/";
+        var restTemplate = new RestTemplate();
+        var httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.setBasicAuth(portal.getRobotClientId(), portal.getRobotSecret());
+
+        var params = new LinkedMultiValueMap<String, String>();
+        params.add("grant_type", "password");
+        params.add("username", portal.getRobotUser());
+        params.add("password", portal.getRobotPassword());
+
+        try {
+            sendRequest(tokenURL, restTemplate, httpHeaders, params, portal);
+        } catch (HttpClientErrorException | ResourceAccessException ex) {
+            System.out.println("Could not authenticate to " + portal);
+            unauthenticated.add(portal);
+        }
     }
 }

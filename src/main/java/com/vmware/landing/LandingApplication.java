@@ -8,13 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,25 +31,10 @@ public class LandingApplication {
     CommandLineRunner fetchAccessTokens() {
         return args -> {
             List<TrainingPortal> unauthenticated = new ArrayList<>();
+            System.out.println( "Authenticating to portals");
 
             for (TrainingPortal portal : _educatesProperties.getTrainingPortals()) {
-                String tokenURL = portal.getUriPrefix() + portal.getPortalDomain() + "/oauth2/token/";
-                var restTemplate = new RestTemplate();
-                var httpHeaders = new HttpHeaders();
-                httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                httpHeaders.setBasicAuth(portal.getRobotClientId(), portal.getRobotSecret());
-
-                var params = new LinkedMultiValueMap<String, String>();
-                params.add("grant_type", "password");
-                params.add("username", portal.getRobotUser());
-                params.add("password", portal.getRobotPassword());
-
-                try {
-                    _requestUtilities.sendRequest(tokenURL, restTemplate, httpHeaders, params, portal);
-                } catch (HttpClientErrorException | ResourceAccessException ex) {
-                    System.out.println("Could not authenticate to " + portal);
-                    unauthenticated.add(portal);
-                }
+                _requestUtilities.authenticateToPortal(portal, unauthenticated);
             }
 
             for (TrainingPortal portal : unauthenticated) {
@@ -63,4 +42,5 @@ public class LandingApplication {
             }
         };
     }
+
 }
